@@ -4,30 +4,24 @@ Internal web app for managing a hotel restaurant – staff, shift planning and m
 
 Stack: Python 3.14, Django, Bootstrap 5, SQLite, Docker Compose.
 
-## Local development
+## Development
+
+Common commands are in the `Makefile` – run `make` to list them.
 
 ```bash
 cp .env.example .env        # then set DJANGO_DEBUG=1
-uv sync
-uv run python manage.py migrate
-uv run python manage.py createsuperuser
-uv run python manage.py runserver
+make up                     # dev app in Docker at http://localhost:8000
+make createsuperuser        # first time only
+make logs                   # follow logs
+make down                   # stop (data is kept)
+make check                  # lint + unit tests before committing
 ```
 
-Tests and linting:
-
-```bash
-uv run python manage.py test
-uv run ruff check . && uv run ruff format .
-```
-
-Development in Docker (runserver, source mounted):
-
-```bash
-docker compose -f compose.yaml -f compose.dev.yaml up --build
-```
+Without Docker: `make install` and `make run`.
 
 ## Installation on Zuza’s laptop (Windows)
+
+Windows has no `make`, so the commands below are plain `docker compose` calls (the `prod-*` make targets do the same).
 
 1. Install Docker Desktop and Git for Windows. In Docker Desktop enable *Start Docker Desktop when you sign in* (Settings → General).
 2. Clone the repository and create `.env` from `.env.example`:

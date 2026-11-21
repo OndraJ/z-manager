@@ -16,21 +16,22 @@ Internal Django web app for a hotel restaurant manager (Zuza). Runs locally in D
 
 Local commands read `.env` (via python-dotenv). For development create it with `DJANGO_DEBUG=1` – see `.env.example`.
 
-```bash
-uv sync                                    # install dependencies
-uv run python manage.py runserver          # quick local run without Docker
-uv run python manage.py test               # unit tests
-uv run ruff check . && uv run ruff format . # lint + format
+Use the `Makefile` (`make` lists all targets). The most important ones:
 
-docker compose up -d --build               # production setup (what runs on Zuza's laptop)
-docker compose -f compose.yaml -f compose.dev.yaml up --build   # dev setup with runserver + mounted source
-docker compose exec web python manage.py migrate
-docker compose exec web python manage.py createsuperuser
+```bash
+make check          # ruff lint + format check + unit tests – run before saying a task is done
+make test           # unit tests only (uv, no Docker)
+make format         # auto-fix lint issues and format
+make up / down      # dev app in Docker (runserver + mounted source) – the developer's own instance
+make migrate        # apply migrations in the running dev container
+make prod-up        # production setup (what runs on Zuza's laptop)
 ```
+
+When adding a new recurring command, add a Makefile target with a `## description` comment.
 
 The dev Compose file is deliberately **not** named `compose.override.yaml`, so Docker never auto-loads dev settings on Zuza's laptop.
 
-The containers run `migrate` only at start. After adding a migration, run `docker compose -f compose.yaml -f compose.dev.yaml exec web python manage.py migrate` (or restart the container).
+The containers run `migrate` only at start. After adding a migration, run `make migrate` (or `make restart`).
 
 The Docker daemon is shared with the developer's own setup (project name `z_manager`). For automated verification use a separate project, e.g. `docker compose -p zm-test …`, and never `down -v` the `z_manager` project – that deletes the developer's data volume.
 
