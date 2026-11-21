@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block body %}
+{% include "partials/_header.html" %}
+<div class="zm-shell">
+  {% include "partials/_sidebar.html" %}
+  <main class="zm-main">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    image: z-manager
+    env_file: .env
+    environment:
+      DJANGO_SQLITE_PATH: /data/db.sqlite3
+    ports:
+      # Bound to localhost only – the app must not be reachable from the hotel network.
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - data:/data
+    restart: unless-stopped
+
+volumes:
+  data:

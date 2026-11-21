@@ -1,0 +1,10 @@
+# Development only: docker compose -f compose.yaml -f compose.dev.yaml up --build
+# Deliberately not named compose.override.yaml so it is never auto-loaded on Zuza's laptop.
+services:
+  web:
+    command: sh -c "python manage.py migrate --noinput && exec python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DJANGO_DEBUG: "1"
+    volumes:
+      - .:/app
+    restart: "no"

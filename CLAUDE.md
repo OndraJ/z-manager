@@ -14,6 +14,8 @@ Internal Django web app for a hotel restaurant manager (Zuza). Runs locally in D
 
 ## Commands
 
+Local commands read `.env` (via python-dotenv). For development create it with `DJANGO_DEBUG=1` – see `.env.example`.
+
 ```bash
 uv sync                                    # install dependencies
 uv run python manage.py runserver          # quick local run without Docker
@@ -31,7 +33,13 @@ The dev Compose file is deliberately **not** named `compose.override.yaml`, so D
 ## Conventions
 
 - **Language:** all code, identifiers, comments, docstrings, commit messages and docs for developers in English. Only user-facing texts (templates, messages, form labels, model `verbose_name`) are in Czech. `LANGUAGE_CODE = "cs"`, `TIME_ZONE = "Europe/Prague"`.
-- **Layout:** Django project package `config/` (settings, urls, wsgi); one Django app per domain area (e.g. `accounts`, `employees`); shared templates in `templates/`, shared static files in `static/`.
+- **Layout:**
+  - `config/` – settings (single env-driven file), root URLs, WSGI
+  - one Django app per domain area: `accounts` (login/logout via Django auth views), `dashboard` (home page, `hotel_links` context processor); future e.g. `employees`
+  - `templates/base.html` (HTML skeleton) → `templates/layout.html` (header + sidebar + `content` block) → page templates; reusable pieces in `templates/partials/` (`_logo`, `_header`, `_sidebar`)
+  - `static/css/app.css` – the only project stylesheet (brand variables, layout); `static/img/bell.svg` – logo icon and favicon; third-party assets in `static/vendor/` (never edit)
+  - Sidebar items are added only when the feature is finished (PRD).
+- **Configuration values** that may change (e.g. `HOTEL_LINKS`) live in `config/settings.py`, not in templates.
 - **Auth:** a single account, no registration, no password reset by e-mail, Django admin disabled. All pages except login require login.
 - Prefer Django built-ins (auth views, class-based views, forms, messages) over custom code or extra packages. Add a dependency only when it clearly saves work.
 - Keep it simple – this is an experiment for one user, not a SaaS.

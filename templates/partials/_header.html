@@ -1,0 +1,19 @@
+{% url 'dashboard' as dashboard_url %}
+<header class="zm-header">
+  <div></div>
+  {% include "partials/_logo.html" with href=dashboard_url %}
+  <div class="zm-header-actions">
+    {% for link in hotel_links %}
+      <a class="zm-social" href="{{ link.url }}" target="_blank" rel="noopener noreferrer"
+         title="{{ link.label }}" aria-label="{{ link.label }}">
+        <i class="bi {{ link.icon }}" aria-hidden="true"></i>
+      </a>
+    {% endfor %}
+    <form method="post" action="{% url 'logout' %}" class="ms-2">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary btn-sm">
+        <i class="bi bi-box-arrow-right me-1" aria-hidden="true"></i>Odhlásit
+      </button>
+    </form>
+  </div>
+</header>
