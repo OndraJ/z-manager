@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "accounts",
     "dashboard",
     "employees",
+    "backups",
 ]
 
 MIDDLEWARE = [
@@ -75,6 +76,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "dashboard.context_processors.hotel_links",
+                "backups.context_processors.backup_settings",
             ],
         },
     },
@@ -131,6 +133,27 @@ STORAGES = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# E-mail – used for backups. Without EMAIL_HOST, e-mails are only printed to the log.
+
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
+EMAIL_BACKEND = (
+    "django.core.mail.backends.smtp.EmailBackend"
+    if EMAIL_HOST
+    else "django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS")
+EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+# Google shows app passwords with spaces ("abcd efgh ..."); accept them as pasted.
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "").replace(" ", "")
+EMAIL_TIMEOUT = 30
+DEFAULT_FROM_EMAIL = f"Zuza’s Manager <{EMAIL_HOST_USER or 'zuzas-manager@localhost'}>"
+
+# Recipients of the backup e-mail (comma-separated).
+BACKUP_EMAIL_TO = env_list("BACKUP_EMAIL_TO", "")
 
 
 # Hotel links shown in the header (label, URL, Bootstrap Icons class).

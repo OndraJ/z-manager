@@ -3,13 +3,22 @@
 # Docker targets use the dev setup (runserver + mounted source) by default.
 # prod-* targets use the production setup that runs on Zuza's laptop.
 
+# Copy a backup into the container and restore it (asks for confirmation).
+# $(1) = compose command
+define restore_backup
+	@test -n "$(FILE)" || { echo "Usage: make $@ FILE=<backup.sqlite3>"; exit 1; }
+	$(1) cp "$(FILE)" web:/tmp/restore.sqlite3
+	$(1) exec -u root web chmod 644 /tmp/restore.sqlite3
+	$(1) exec web python manage.py restore_backup /tmp/restore.sqlite3
+endef
+
 DEV  := docker compose -f compose.yaml -f compose.dev.yaml
 PROD := docker compose
 
 .DEFAULT_GOAL := help
 .PHONY: help up down restart logs ps shell migrate makemigrations createsuperuser \
-	changepassword prod-up prod-down prod-restart prod-logs prod-migrate install run \
-	test lint format check
+	changepassword restore prod-up prod-down prod-restart prod-logs prod-migrate prod-restore \
+	install run test lint format check
 
 help: ## Show this help
 	@grep -E '^(## ---|[a-zA-Z_-]+:.*## )' $(MAKEFILE_LIST) | \
@@ -50,6 +59,9 @@ changepassword: ## Reset a password: make changepassword ACCOUNT=<username>
 	@test -n "$(ACCOUNT)" || { echo "Usage: make changepassword ACCOUNT=<username>"; exit 1; }
 	$(DEV) exec web python manage.py changepassword $(ACCOUNT)
 
+restore: ## Restore data from a backup e-mail attachment: make restore FILE=<file>
+	$(call restore_backup,$(DEV))
+
 ## --- Docker (production, Zuza's laptop) ---
 
 prod-up: ## Build and start the production app
@@ -66,6 +78,9 @@ prod-logs: ## Follow the production logs
 
 prod-migrate: ## Apply migrations in the production container
 	$(PROD) exec web python manage.py migrate
+
+prod-restore: ## Restore production data from a backup: make prod-restore FILE=<file>
+	$(call restore_backup,$(PROD))
 
 ## --- Local (uv, without Docker) ---
 

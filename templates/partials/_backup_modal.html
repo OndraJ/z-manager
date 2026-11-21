@@ -1,0 +1,34 @@
+<div class="modal fade" id="backup-modal" tabindex="-1" aria-labelledby="backup-modal-title" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post" action="{% url 'backup' %}"
+            onsubmit="const b = this.querySelector('[type=submit]'); b.disabled = true; b.textContent = 'Odesílám…';">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="backup-modal-title">
+            <i class="bi bi-envelope-arrow-up me-2" aria-hidden="true"></i>Záloha dat
+          </h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+        </div>
+
+        <div class="modal-body">
+          {% if backup_email_to %}
+            <p class="mb-2">Opravdu chcete poslat zálohu databáze na e-mail:</p>
+            <p class="fw-semibold mb-0">{{ backup_email_to|join:", " }}</p>
+          {% else %}
+            <p class="mb-0">Zálohování není nastavené – chybí e-mailová adresa pro zálohy.</p>
+          {% endif %}
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Zrušit</button>
+          {% if backup_email_to %}
+            <button type="submit" class="btn btn-primary">Odeslat zálohu</button>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

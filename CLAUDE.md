@@ -40,8 +40,10 @@ The Docker daemon is shared with the developer's own setup (project name `z_mana
 - **Language:** all code, identifiers, comments, docstrings, commit messages and docs for developers in English. Only user-facing texts (templates, messages, form labels, model `verbose_name`) are in Czech. `LANGUAGE_CODE = "cs"`, `TIME_ZONE = "Europe/Prague"`.
 - **Layout:**
   - `config/` – settings (single env-driven file), root URLs, WSGI
-  - one Django app per domain area: `accounts` (login/logout via Django auth views), `dashboard` (home page, `hotel_links` context processor), `employees` (staff records)
+  - one Django app per domain area: `accounts` (login/logout via Django auth views), `dashboard` (home page, `hotel_links` context processor), `employees` (staff records), `backups` (e-mail backup button, `restore_backup` command)
   - Always list employees with `Employee.objects.ordered()` – status order (active, sick, terminated), then Czech alphabetical order by name via the `czech` SQLite collation (`employees/collation.py`). Plain `order_by("last_name")` sorts Czech names wrongly.
+  - SQLite backups use the online backup API (`backups/services.py`). It cannot run inside an open transaction – tests touching it must use `TransactionTestCase`.
+  - Redirects to a POSTed `next` URL go through `config.utils.get_safe_next_url`.
   - Django messages are rendered as Bootstrap alerts by `templates/layout.html` – use `messages`/`SuccessMessageMixin` for feedback after actions.
   - `templates/base.html` (HTML skeleton) → `templates/layout.html` (header + sidebar + `content` block) → page templates; reusable pieces in `templates/partials/` (`_logo`, `_header`, `_sidebar`)
   - `static/css/app.css` – the only project stylesheet (brand variables, layout); `static/img/bell.svg` – logo icon and favicon; third-party assets in `static/vendor/` (never edit)

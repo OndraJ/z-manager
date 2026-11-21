@@ -45,6 +45,31 @@ The database lives in the Docker volume `z_manager_data` – never run `docker c
 docker compose exec web python manage.py changepassword <username>
 ```
 
+### Backups
+
+The „Zálohovat“ button at the bottom of the sidebar e-mails a copy of the database (`zuzas-manager-<date>.sqlite3`) to `BACKUP_EMAIL_TO`. The app sends from its own Gmail account `zuzasmanager@gmail.com` – fill in the `EMAIL_*` values in `.env` (see `.env.example`) and restart: `docker compose up -d`.
+
+Without `EMAIL_HOST` (e.g. in development) the e-mail is only printed to the container log.
+
+### Restoring from a backup
+
+Save the attachment from the backup e-mail, then (on a Mac/Linux machine with make):
+
+```bash
+make restore FILE=path/to/zuzas-manager-2026-11-21-2204.sqlite3        # dev
+make prod-restore FILE=path/to/zuzas-manager-2026-11-21-2204.sqlite3   # production
+```
+
+On Zuza’s Windows laptop (PowerShell, in the project folder):
+
+```powershell
+docker compose cp "C:\Users\<user>\Downloads\zuzas-manager-....sqlite3" web:/tmp/restore.sqlite3
+docker compose exec -u root web chmod 644 /tmp/restore.sqlite3
+docker compose exec web python manage.py restore_backup /tmp/restore.sqlite3
+```
+
+The command checks the file, asks for confirmation, keeps a safety copy of the current data in the volume (`/data/before-restore-*.sqlite3`) and applies migrations, so older backups work too.
+
 ### Deploying a new version
 
 ```bash

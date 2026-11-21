@@ -143,11 +143,23 @@ h1, h2, h3, h4, h5, h6,
 }
 .zm-sidebar {
   flex: 0 0 15rem;
+  display: flex;
+  flex-direction: column;
   padding: 1.25rem 0.75rem;
   background: var(--zm-cream);
 }
+.zm-sidebar-bottom {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(var(--zm-cherry-rgb), 0.15);
+}
 .zm-sidebar .nav-link {
   color: var(--zm-cherry);
+}
+.zm-sidebar .nav-link:not(.active):hover,
+.zm-sidebar .nav-link:not(.active):focus-visible {
+  background: rgba(var(--zm-cherry-rgb), 0.1);
+  color: var(--zm-cherry-dark);
 }
 .zm-sidebar .nav-link.active {
   color: #fff;

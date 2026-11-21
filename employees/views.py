@@ -2,9 +2,9 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse, reverse_lazy
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import CreateView, ListView, UpdateView
 
+from config.utils import get_safe_next_url
 from employees.forms import EmployeeForm, EmployeeStatusForm
 from employees.models import Employee, EmployeeStatus, EmploymentType
 
@@ -67,12 +67,7 @@ class EmployeeStatusUpdateView(LoginRequiredMixin, UpdateView):
     http_method_names = ["post"]
 
     def get_success_url(self):
-        next_url = self.request.POST.get("next", "")
-        if url_has_allowed_host_and_scheme(
-            next_url, allowed_hosts={self.request.get_host()}, require_https=False
-        ):
-            return next_url
-        return reverse("employees:list")
+        return get_safe_next_url(self.request, default=reverse("employees:list"))
 
     def form_valid(self, form):
         response = super().form_valid(form)
