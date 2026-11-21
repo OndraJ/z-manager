@@ -172,3 +172,12 @@ h1, h2, h3, h4, h5, h6,
   max-width: 24rem;
   border: 0;
 }
+
+/* Employees */
+.zm-status-select {
+  width: auto;
+  min-width: 9rem;
+}
+.zm-form {
+  max-width: 32rem;
+}

@@ -30,12 +30,18 @@ docker compose exec web python manage.py createsuperuser
 
 The dev Compose file is deliberately **not** named `compose.override.yaml`, so Docker never auto-loads dev settings on Zuza's laptop.
 
+The containers run `migrate` only at start. After adding a migration, run `docker compose -f compose.yaml -f compose.dev.yaml exec web python manage.py migrate` (or restart the container).
+
+The Docker daemon is shared with the developer's own setup (project name `z_manager`). For automated verification use a separate project, e.g. `docker compose -p zm-test …`, and never `down -v` the `z_manager` project – that deletes the developer's data volume.
+
 ## Conventions
 
 - **Language:** all code, identifiers, comments, docstrings, commit messages and docs for developers in English. Only user-facing texts (templates, messages, form labels, model `verbose_name`) are in Czech. `LANGUAGE_CODE = "cs"`, `TIME_ZONE = "Europe/Prague"`.
 - **Layout:**
   - `config/` – settings (single env-driven file), root URLs, WSGI
-  - one Django app per domain area: `accounts` (login/logout via Django auth views), `dashboard` (home page, `hotel_links` context processor); future e.g. `employees`
+  - one Django app per domain area: `accounts` (login/logout via Django auth views), `dashboard` (home page, `hotel_links` context processor), `employees` (staff records)
+  - Always list employees with `Employee.objects.ordered()` – status order (active, sick, terminated), then Czech alphabetical order by name via the `czech` SQLite collation (`employees/collation.py`). Plain `order_by("last_name")` sorts Czech names wrongly.
+  - Django messages are rendered as Bootstrap alerts by `templates/layout.html` – use `messages`/`SuccessMessageMixin` for feedback after actions.
   - `templates/base.html` (HTML skeleton) → `templates/layout.html` (header + sidebar + `content` block) → page templates; reusable pieces in `templates/partials/` (`_logo`, `_header`, `_sidebar`)
   - `static/css/app.css` – the only project stylesheet (brand variables, layout); `static/img/bell.svg` – logo icon and favicon; third-party assets in `static/vendor/` (never edit)
   - Sidebar items are added only when the feature is finished (PRD).

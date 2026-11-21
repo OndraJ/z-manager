@@ -1,11 +1,18 @@
-{% url 'dashboard' as dashboard_url %}
+{% with match=request.resolver_match %}
 <nav class="zm-sidebar" aria-label="Hlavní navigace">
   <ul class="nav nav-pills flex-column gap-1">
     <li class="nav-item">
-      <a href="{{ dashboard_url }}"
-         {% if request.path == dashboard_url %}class="nav-link active" aria-current="page"{% else %}class="nav-link"{% endif %}>
+      <a href="{% url 'dashboard' %}"
+         {% if match.url_name == 'dashboard' %}class="nav-link active" aria-current="page"{% else %}class="nav-link"{% endif %}>
         <i class="bi bi-house-door me-2" aria-hidden="true"></i>Pracovní plocha
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'employees:list' %}"
+         {% if match.namespace == 'employees' %}class="nav-link active" aria-current="page"{% else %}class="nav-link"{% endif %}>
+        <i class="bi bi-people me-2" aria-hidden="true"></i>Správa zaměstnanců
       </a>
     </li>
   </ul>
 </nav>
+{% endwith %}

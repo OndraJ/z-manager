@@ -6,7 +6,7 @@ Zuza runs a hotel restaurant. Among other things she is responsible for staff, s
 
 The user interface is in Czech. Czech UI labels are quoted in this document as they should appear in the app.
 
-## Milestone 1 – local app with login
+## Milestone 1 – local app with login ✅ done
 
 Zuza opens a local address in the browser on her computer, logs in and lands on the home dashboard. This milestone delivers the project skeleton, a working local setup and the visual foundation for further screens.
 
@@ -38,7 +38,7 @@ Steps 2–4 are covered by unit tests. All steps are additionally verified by cl
 
 | Order | Area | Scope agreed so far |
 | --- | --- | --- |
-| 2 | Simple staff records | Zuza can add an employee and edit all of their data: first name, last name, date of birth, employment type (HPP – full-time employment contract, or brigáda – casual/part-time work) and status („aktivní“ active, „nemocný“ sick, „ukončený“ terminated; default active). Employees cannot be deleted; ending employment is recorded by changing the status. The list can be filtered by status. Without a filter it shows all employees ordered: active, sick, terminated. The milestone also includes a „Zálohovat“ (back up) button that copies the SQLite database file to another folder on the computer. The staff records will be the source of employees when building the shift schedule. |
+| 2 | Simple staff records | A new sidebar item „Správa zaměstnanců“ below „Pracovní plocha“. Zuza can add an employee and edit all of their data: first name, last name, date of birth, employment type (HPP – full-time employment contract, or brigáda – casual/part-time work) and status („aktivní“ active, „nemocný“ sick, „ukončený“ terminated; default active). All fields are required; the date of birth cannot be in the future. Adding and editing happen on a separate page; after saving, Zuza returns to the list with a confirmation message. Employees cannot be deleted; ending employment is recorded by changing the status. The status can also be changed directly in the list (saved immediately). The list shows name, date of birth, employment type, status and an edit button, and can be filtered by status and by employment type (filters combine). Without a filter it shows all employees ordered: active, sick, terminated, then alphabetically by last and first name (Czech alphabetical order). The milestone also includes a „Zálohovat“ (back up) button that copies the SQLite database file to another folder on the computer. The staff records will be the source of employees when building the shift schedule. |
 | 3 | Shift schedule | Zuza builds the schedule in advance for a week, several weeks or a month and assigns employees from the staff records to shifts. All employees are available for selection, in the same order as in the staff records. The detailed design will be done after the app foundation is finished. |
 
 Any further areas will be decided based on experience with using the app.

@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block title %}Správa zaměstnanců · Zuza’s Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+  <h1 class="h3 mb-0">Správa zaměstnanců</h1>
+  <a href="{% url 'employees:create' %}" class="btn btn-primary">
+    <i class="bi bi-person-plus me-1" aria-hidden="true"></i>Přidat zaměstnance
+  </a>
+</div>
+
+<div class="d-flex flex-wrap gap-4 mb-3">
+  <div>
+    <div class="small text-body-secondary mb-1">Status</div>
+    <div class="btn-group btn-group-sm" role="group" aria-label="Filtr podle statusu">
+      {% for value, label in status_choices %}
+        <a href="?status={{ value }}&amp;employment_type={{ employment_type_filter }}"
+           {% if value == status_filter %}class="btn btn-primary" aria-current="true"{% else %}class="btn btn-outline-secondary"{% endif %}>{{ label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  <div>
+    <div class="small text-body-secondary mb-1">Pracovní poměr</div>
+    <div class="btn-group btn-group-sm" role="group" aria-label="Filtr podle pracovního poměru">
+      {% for value, label in employment_type_choices %}
+        <a href="?status={{ status_filter }}&amp;employment_type={{ value }}"
+           {% if value == employment_type_filter %}class="btn btn-primary" aria-current="true"{% else %}class="btn btn-outline-secondary"{% endif %}>{{ label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% if employees %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th scope="col">Příjmení a jméno</th>
+          <th scope="col">Datum narození</th>
+          <th scope="col">Pracovní poměr</th>
+          <th scope="col">Status</th>
+          <th scope="col"><span class="visually-hidden">Akce</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for employee in employees %}
+          <tr>
+            <td class="fw-semibold">{{ employee.last_name }} {{ employee.first_name }}</td>
+            <td>{{ employee.birth_date|date:"j. n. Y" }}</td>
+            <td>{{ employee.get_employment_type_display }}</td>
+            <td>
+              <form method="post" action="{% url 'employees:update_status' employee.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <select name="status" class="form-select form-select-sm zm-status-select"
+                        aria-label="Status – {{ employee }}" onchange="this.form.requestSubmit()">
+                  {% for value, label in all_status_choices %}
+                    <option value="{{ value }}"{% if value == employee.status %} selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                <noscript><button type="submit" class="btn btn-sm btn-outline-secondary mt-1">Uložit</button></noscript>
+              </form>
+            </td>
+            <td class="text-end">
+              <a href="{% url 'employees:update' employee.pk %}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-pencil me-1" aria-hidden="true"></i>Upravit
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% elif status_filter or employment_type_filter %}
+  <p class="text-body-secondary">Žádný zaměstnanec neodpovídá vybranému filtru.</p>
+{% else %}
+  <p class="text-body-secondary">Zatím tu nejsou žádní zaměstnanci. Začněte tlačítkem „Přidat zaměstnance“.</p>
+{% endif %}
+{% endblock %}
