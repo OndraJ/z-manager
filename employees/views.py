@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView
 
@@ -78,5 +79,6 @@ class EmployeeStatusUpdateView(LoginRequiredMixin, UpdateView):
         return response
 
     def form_invalid(self, form):
+        # There is no page for this form – go back to the list (with its filters).
         messages.error(self.request, "Status se nepodařilo změnit.")
-        return super().form_invalid(form)
+        return redirect(self.get_success_url())

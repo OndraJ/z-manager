@@ -188,8 +188,12 @@ class EmployeeStatusUpdateTests(EmployeeViewTestCase):
     def test_get_is_not_allowed(self):
         self.assertEqual(self.client.get(self.url).status_code, 405)
 
-    def test_invalid_status_is_rejected(self):
-        self.client.post(self.url, {"status": "fired"})
+    def test_invalid_status_is_rejected_and_returns_to_filtered_list(self):
+        next_url = f"{LIST_URL}?status=active&employment_type="
 
+        response = self.client.post(self.url, {"status": "fired", "next": next_url}, follow=True)
+
+        self.assertRedirects(response, next_url)
+        self.assertContains(response, "Status se nepodařilo změnit.")
         self.employee.refresh_from_db()
         self.assertEqual(self.employee.status, EmployeeStatus.ACTIVE)
