@@ -8,3 +8,7 @@
 *.sqlite3
 staticfiles
 design
+.verify
+.coverage
+htmlcov
+.ruff_cache

@@ -52,3 +52,5 @@ Why the project is the way it is. Newest decisions at the bottom. Format: **deci
 
 24. **All logs go to the console (`docker compose logs`), Django errors at level ERROR; gunicorn logs requests.** – Django's default logging drops server errors when `DEBUG` is off (it only mails `ADMINS`), so a crash on Zuza's laptop left no traceback. 4xx warnings are left out as noise.
 25. **The Gmail SMTP settings are fixed in code; `.env` holds only the app password and the recipients.** – There is exactly one sending account (#12). Fewer variables mean fewer ways to misconfigure Zuza's laptop; an empty password switches to printing e-mails, which is also how test stacks disable sending.
+26. **No `prod-*` make targets; production commands are plain `docker compose` in README.** – Zuza's Windows laptop has no `make`, so those targets only ever ran on the developer's machine – against the developer's own data and dev `.env`, which made `make prod-restore` dangerous and misleading.
+27. **WhiteNoise runs in every environment** (`WHITENOISE_AUTOREFRESH = DEBUG`). – One middleware list everywhere, so tests and the verify stack exercise the same stack as Zuza's laptop.

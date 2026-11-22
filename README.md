@@ -25,7 +25,7 @@ Without Docker: `make install` and `make run`.
 
 ## Installation on Zuza’s laptop (Windows)
 
-Windows has no `make`, so the commands below are plain `docker compose` calls (the `prod-*` make targets do the same).
+Windows has no `make`, so everything for the laptop is a plain `docker compose` call. The `make` targets are for the developer's machine only.
 
 1. Install Docker Desktop and Git for Windows. In Docker Desktop enable *Start Docker Desktop when you sign in* (Settings → General).
 2. Clone the repository and create `.env` from `.env.example`:
@@ -59,12 +59,7 @@ Backups are also copied to Google Drive by an Apps Script in the app's Gmail acc
 
 ### Restoring from a backup
 
-Save the attachment from the backup e-mail, then (on a Mac/Linux machine with make):
-
-```bash
-make restore FILE=path/to/zuzas-manager-2026-11-21-2204.sqlite3        # dev
-make prod-restore FILE=path/to/zuzas-manager-2026-11-21-2204.sqlite3   # production
-```
+Save the attachment from the backup e-mail (or download it from the Drive folder).
 
 On Zuza’s Windows laptop (PowerShell, in the project folder):
 
@@ -73,6 +68,8 @@ docker compose cp "C:\Users\<user>\Downloads\zuzas-manager-....sqlite3" web:/tmp
 docker compose exec -u root web chmod 644 /tmp/restore.sqlite3
 docker compose exec web python manage.py restore_backup /tmp/restore.sqlite3
 ```
+
+The same into the developer's own instance: `make restore FILE=path/to/backup.sqlite3`.
 
 The command checks the file, asks for confirmation, keeps a safety copy of the current data in the volume (`/data/before-restore-*.sqlite3`) and applies migrations, so older backups work too.
 

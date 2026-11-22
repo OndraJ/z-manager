@@ -1,23 +1,13 @@
 # Zuza's Manager – common commands. Run `make` to list them.
 #
-# Docker targets use the dev setup (runserver + mounted source) by default.
-# prod-* targets use the production setup that runs on Zuza's laptop.
+# These run on the developer's machine. Zuza's Windows laptop has no make – production
+# commands for it are plain `docker compose` calls in README.md.
 
-# Copy a backup into the container and restore it (asks for confirmation).
-# $(1) = compose command
-define restore_backup
-	@test -n "$(FILE)" || { echo "Usage: make $@ FILE=<backup.sqlite3>"; exit 1; }
-	$(1) cp "$(FILE)" web:/tmp/restore.sqlite3
-	$(1) exec -u root web chmod 644 /tmp/restore.sqlite3
-	$(1) exec web python manage.py restore_backup /tmp/restore.sqlite3
-endef
-
-DEV  := docker compose -f compose.yaml -f compose.dev.yaml
-PROD := docker compose
+DEV := docker compose -f compose.yaml -f compose.dev.yaml
 
 .DEFAULT_GOAL := help
 .PHONY: help up down restart logs ps shell migrate makemigrations createsuperuser \
-	changepassword restore prod-up prod-down prod-restart prod-logs prod-migrate prod-restore \
+	changepassword restore \
 	verify-up verify-shots verify-manage verify-down install run test coverage lint format \
 	check check-language check-migrations check-deploy
 
@@ -60,28 +50,11 @@ changepassword: ## Reset a password: make changepassword ACCOUNT=<username>
 	@test -n "$(ACCOUNT)" || { echo "Usage: make changepassword ACCOUNT=<username>"; exit 1; }
 	$(DEV) exec web python manage.py changepassword $(ACCOUNT)
 
-restore: ## Restore data from a backup e-mail attachment: make restore FILE=<file>
-	$(call restore_backup,$(DEV))
-
-## --- Docker (production, Zuza's laptop) ---
-
-prod-up: ## Build and start the production app
-	$(PROD) up -d --build
-
-prod-down: ## Stop the production app (data in the volume is kept)
-	$(PROD) down
-
-prod-restart: ## Restart the production app
-	$(PROD) restart web
-
-prod-logs: ## Follow the production logs
-	$(PROD) logs -f web
-
-prod-migrate: ## Apply migrations in the production container
-	$(PROD) exec web python manage.py migrate
-
-prod-restore: ## Restore production data from a backup: make prod-restore FILE=<file>
-	$(call restore_backup,$(PROD))
+restore: ## Restore the dev data from a backup e-mail attachment: make restore FILE=<file>
+	@test -n "$(FILE)" || { echo "Usage: make restore FILE=<backup.sqlite3>"; exit 1; }
+	$(DEV) cp "$(FILE)" web:/tmp/restore.sqlite3
+	$(DEV) exec -u root web chmod 644 /tmp/restore.sqlite3
+	$(DEV) exec web python manage.py restore_backup /tmp/restore.sqlite3
 
 ## --- Verification (isolated zm-test stack, port 8001, no real e-mail) ---
 
@@ -95,9 +68,10 @@ PAGES ?= / /employees/ /employees/new/
 verify-up: ## Start the isolated verification stack with a test account
 	$(VERIFY) up -d --build
 	@for i in $$(seq 1 60); do curl -sf -o /dev/null $(VERIFY_URL)/login/ && break; sleep 1; done
-	@$(VERIFY) exec -T -e DJANGO_SUPERUSER_PASSWORD=$(VERIFY_PASSWORD) web \
-		python manage.py createsuperuser --noinput --username $(VERIFY_USER) --email "" \
-		2>/dev/null || true
+	@curl -sf -o /dev/null $(VERIFY_URL)/login/ || \
+		{ echo "Verification stack did not start:"; $(VERIFY) logs --tail 30 web; exit 1; }
+	@$(VERIFY) exec -T web python manage.py shell -c \
+		"from django.contrib.auth.models import User; User.objects.filter(username='$(VERIFY_USER)').exists() or User.objects.create_superuser('$(VERIFY_USER)', '', '$(VERIFY_PASSWORD)')"
 	@echo "Verification stack: $(VERIFY_URL) (user $(VERIFY_USER) / $(VERIFY_PASSWORD))"
 
 verify-shots: ## Screenshot pages of the verification stack: make verify-shots PAGES="/ /employees/"
