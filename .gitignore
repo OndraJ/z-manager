@@ -25,3 +25,6 @@ Thumbs.db
 
 # IDE
 .idea/
+
+# Verification screenshots (make verify-shots)
+/.verify/

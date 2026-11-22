@@ -33,7 +33,15 @@ select = ["E", "F", "I", "UP", "B", "DJ", "SIM", "C4", "RET", "PTH", "S"]
 [tool.coverage.run]
 branch = true
 source = ["."]
-omit = ["*/migrations/*", "*/tests/*", "manage.py", "config/wsgi.py", ".venv/*"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "manage.py",
+    "config/wsgi.py",
+    ".venv/*",
+    # Needs a browser; exercised by `make verify-shots`.
+    "scripts/screenshots.py",
+]
 
 [tool.coverage.report]
 fail_under = 90

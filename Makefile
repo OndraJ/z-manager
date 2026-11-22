@@ -18,7 +18,8 @@ PROD := docker compose
 .DEFAULT_GOAL := help
 .PHONY: help up down restart logs ps shell migrate makemigrations createsuperuser \
 	changepassword restore prod-up prod-down prod-restart prod-logs prod-migrate prod-restore \
-	install run test coverage lint format check check-language check-migrations check-deploy
+	verify-up verify-shots verify-manage verify-down install run test coverage lint format \
+	check check-language check-migrations check-deploy
 
 help: ## Show this help
 	@grep -E '^(## ---|[a-zA-Z_-]+:.*## )' $(MAKEFILE_LIST) | \
@@ -81,6 +82,34 @@ prod-migrate: ## Apply migrations in the production container
 
 prod-restore: ## Restore production data from a backup: make prod-restore FILE=<file>
 	$(call restore_backup,$(PROD))
+
+## --- Verification (isolated zm-test stack, port 8001, no real e-mail) ---
+
+VERIFY := ZM_PORT=8001 docker compose -p zm-test -f compose.yaml -f compose.dev.yaml -f compose.verify.yaml
+VERIFY_URL := http://127.0.0.1:8001
+VERIFY_USER := verify
+VERIFY_PASSWORD := verify-password-123
+SHOTS_DIR ?= .verify/screenshots
+PAGES ?= / /employees/ /employees/new/
+
+verify-up: ## Start the isolated verification stack with a test account
+	$(VERIFY) up -d --build
+	@for i in $$(seq 1 60); do curl -sf -o /dev/null $(VERIFY_URL)/login/ && break; sleep 1; done
+	@$(VERIFY) exec -T -e DJANGO_SUPERUSER_PASSWORD=$(VERIFY_PASSWORD) web \
+		python manage.py createsuperuser --noinput --username $(VERIFY_USER) --email "" \
+		2>/dev/null || true
+	@echo "Verification stack: $(VERIFY_URL) (user $(VERIFY_USER) / $(VERIFY_PASSWORD))"
+
+verify-shots: ## Screenshot pages of the verification stack: make verify-shots PAGES="/ /employees/"
+	uv run --quiet --with playwright python -m playwright install chromium
+	uv run --quiet --with playwright python scripts/screenshots.py --base $(VERIFY_URL) \
+		--out $(SHOTS_DIR) --user $(VERIFY_USER) --password $(VERIFY_PASSWORD) $(PAGES)
+
+verify-manage: ## Run manage.py in the verification stack: make verify-manage ARGS='shell -c "…"'
+	$(VERIFY) exec -T web python manage.py $(ARGS)
+
+verify-down: ## Stop the verification stack and delete its data
+	$(VERIFY) down -v
 
 ## --- Local (uv, without Docker) ---
 

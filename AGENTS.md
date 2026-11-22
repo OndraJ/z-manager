@@ -71,6 +71,7 @@ make format    # auto-fix lint issues and format
 make test      # tests only (make coverage = tests + coverage report)
 make up/down   # developer's own dev instance in Docker – do not use for verification
 make migrate   # apply migrations in the running dev container (containers migrate only at start)
+make verify-up / verify-manage / verify-shots / verify-down   # isolated stack for UI checks
 ```
 
 New recurring commands get a Makefile target with a `## description` comment.
@@ -87,8 +88,8 @@ If a hook blocks something the developer explicitly asked for, tell the develope
 
 ## Safety
 
-- **The Docker daemon is shared with the developer's own setup** (project `z_manager`, port 8000, the developer's data volume). For verification always use an isolated project and port: `ZM_PORT=8001 docker compose -p zm-test ...`. Never `down -v` anything but `zm-test`.
-- **The developer's `.env` contains real Gmail SMTP credentials.** Test stacks read the same `.env`, so always override `EMAIL_HOST: ""` and `EMAIL_HOST_PASSWORD: ""` in the test compose override.
+- **The Docker daemon is shared with the developer's own setup** (project `z_manager`, port 8000, the developer's data volume). For verification use only `make verify-*` (project `zm-test`, port 8001). Never `down -v` anything but `zm-test`.
+- **The developer's `.env` contains real Gmail SMTP credentials.** Test stacks read the same `.env`; `compose.verify.yaml` disables SMTP – keep it that way for any other test setup.
 - Never print, log or commit secrets (`.env` values). `.env.example` documents every variable.
 - The dev Compose file is `compose.dev.yaml`, deliberately not `compose.override.yaml`, so Docker never auto-loads dev settings on Zuza's laptop.
 

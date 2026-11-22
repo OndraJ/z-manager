@@ -45,3 +45,4 @@ Why the project is the way it is. Newest decisions at the bottom. Format: **deci
     - The formatter never auto-removes unused imports or variables (an agent adds an import before the code that uses it).
     - Without `uv` on `PATH` the hooks block loudly instead of switching off silently.
     - Hook logic is a tested Python module rather than inline shell, so `make check` covers it.
+22. **Browser verification has dedicated make targets** (`verify-up`, `verify-manage`, `verify-shots`, `verify-down`, `compose.verify.yaml`). – Running the isolated stack with SMTP disabled must not depend on an agent remembering the right flags. Playwright runs ad hoc via `uv run --with playwright`, so it is not a project dependency.
