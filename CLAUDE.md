@@ -1,63 +1,6 @@
-# Zuza's Manager
+@AGENTS.md
 
-Internal Django web app for a hotel restaurant manager (Zuza). Runs locally in Docker on her Windows laptop at `http://localhost:8000`.
+## Always loaded context
 
-**What to build is defined in @PRD.md.** Work on one milestone at a time and do not add features, screens or fields the PRD does not ask for. If the PRD is unclear or contradicts itself, ask instead of guessing.
-
-## Stack
-
-- Python 3.14, latest stable Django, dependencies managed with **uv** (`pyproject.toml`, `uv.lock`)
-- Django templates + **Bootstrap 5**, vendored in `static/vendor/` (no CDN – the app must work offline). Bootstrap Icons for icons.
-- Brand: cherry/višňová colour taken from the logo, applied by overriding Bootstrap CSS variables in one project stylesheet. Font Bricolage Grotesque (vendored woff2) only for the logo and headings.
-- SQLite in a persistent Docker volume
-- Production runtime: gunicorn, `DEBUG=False`, whitenoise, config from `.env` (never committed; keep `.env.example` up to date)
-
-## Commands
-
-Local commands read `.env` (via python-dotenv). For development create it with `DJANGO_DEBUG=1` – see `.env.example`.
-
-Use the `Makefile` (`make` lists all targets). The most important ones:
-
-```bash
-make check          # ruff lint + format check + unit tests – run before saying a task is done
-make test           # unit tests only (uv, no Docker)
-make format         # auto-fix lint issues and format
-make up / down      # dev app in Docker (runserver + mounted source) – the developer's own instance
-make migrate        # apply migrations in the running dev container
-make prod-up        # production setup (what runs on Zuza's laptop)
-```
-
-When adding a new recurring command, add a Makefile target with a `## description` comment.
-
-The dev Compose file is deliberately **not** named `compose.override.yaml`, so Docker never auto-loads dev settings on Zuza's laptop.
-
-The containers run `migrate` only at start. After adding a migration, run `make migrate` (or `make restart`).
-
-The Docker daemon is shared with the developer's own setup (project name `z_manager`). For automated verification use a separate project, e.g. `docker compose -p zm-test …`, and never `down -v` the `z_manager` project – that deletes the developer's data volume.
-
-## Conventions
-
-- **Language – strict rule:** Czech is allowed **only** in texts Zuza sees inside the app (templates, Django messages, form labels, model `verbose_name`, the backup e-mail). **Everything else is English**: Python, JS/Apps Script, Makefile, configs, comments, docs, PRD, commit messages – and also names that scripts create outside the app (Drive folders, Gmail labels, file names). Before finishing, grep non-template files for Czech characters and translate anything that is not a user-facing UI string. `LANGUAGE_CODE = "cs"`, `TIME_ZONE = "Europe/Prague"`.
-- **Layout:**
-  - `config/` – settings (single env-driven file), root URLs, WSGI
-  - one Django app per domain area: `accounts` (login/logout via Django auth views), `dashboard` (home page, `hotel_links` context processor), `employees` (staff records), `backups` (e-mail backup button, `restore_backup` command)
-  - Always list employees with `Employee.objects.ordered()` – status order (active, sick, terminated), then Czech alphabetical order by name via the `czech` SQLite collation (`employees/collation.py`). Plain `order_by("last_name")` sorts Czech names wrongly.
-  - SQLite backups use the online backup API (`backups/services.py`). It cannot run inside an open transaction – tests touching it must use `TransactionTestCase`.
-  - Redirects to a POSTed `next` URL go through `config.utils.get_safe_next_url`.
-  - Django messages are rendered as Bootstrap alerts by `templates/layout.html` – use `messages`/`SuccessMessageMixin` for feedback after actions.
-  - `templates/base.html` (HTML skeleton) → `templates/layout.html` (header + sidebar + `content` block) → page templates; reusable pieces in `templates/partials/` (`_logo`, `_header`, `_sidebar`)
-  - `static/css/app.css` – the only project stylesheet (brand variables, layout); `static/img/bell.svg` – logo icon and favicon; third-party assets in `static/vendor/` (never edit)
-  - Sidebar items are added only when the feature is finished (PRD).
-- **Configuration values** that may change (e.g. `HOTEL_LINKS`) live in `config/settings.py`, not in templates.
-- **Auth:** a single account, no registration, no password reset by e-mail, Django admin disabled. All pages except login require login.
-- Prefer Django built-ins (auth views, class-based views, forms, messages) over custom code or extra packages. Add a dependency only when it clearly saves work.
-- Keep it simple – this is an experiment for one user, not a SaaS.
-
-## Testing
-
-- Write unit tests with Django's test runner (`django.test.TestCase`) for every view, form and model behaviour you add, in `tests/` inside each app.
-- Before saying a task is done: tests pass, `ruff check` is clean, and the milestone's "How we verify completion" steps in the PRD are satisfied.
-
-## Git
-
-Do not commit until the user has reviewed the diff and approved it. Never push, create or switch branches – the user does that.
+- Product requirements: @PRD.md
+- Decision log: @docs/decisions.md
