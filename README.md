@@ -51,6 +51,8 @@ The „Zálohovat“ button at the bottom of the sidebar e-mails a copy of the d
 
 Without `EMAIL_HOST` (e.g. in development) the e-mail is only printed to the container log.
 
+Backups are also copied to Google Drive by an Apps Script in the app's Gmail account – see [docs/drive-backup.md](docs/drive-backup.md).
+
 ### Restoring from a backup
 
 Save the attachment from the backup e-mail, then (on a Mac/Linux machine with make):

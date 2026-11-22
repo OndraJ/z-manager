@@ -37,7 +37,7 @@ The Docker daemon is shared with the developer's own setup (project name `z_mana
 
 ## Conventions
 
-- **Language:** all code, identifiers, comments, docstrings, commit messages and docs for developers in English. Only user-facing texts (templates, messages, form labels, model `verbose_name`) are in Czech. `LANGUAGE_CODE = "cs"`, `TIME_ZONE = "Europe/Prague"`.
+- **Language – strict rule:** Czech is allowed **only** in texts Zuza sees inside the app (templates, Django messages, form labels, model `verbose_name`, the backup e-mail). **Everything else is English**: Python, JS/Apps Script, Makefile, configs, comments, docs, PRD, commit messages – and also names that scripts create outside the app (Drive folders, Gmail labels, file names). Before finishing, grep non-template files for Czech characters and translate anything that is not a user-facing UI string. `LANGUAGE_CODE = "cs"`, `TIME_ZONE = "Europe/Prague"`.
 - **Layout:**
   - `config/` – settings (single env-driven file), root URLs, WSGI
   - one Django app per domain area: `accounts` (login/logout via Django auth views), `dashboard` (home page, `hotel_links` context processor), `employees` (staff records), `backups` (e-mail backup button, `restore_backup` command)
