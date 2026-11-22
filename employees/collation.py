@@ -1,9 +1,9 @@
 """Czech alphabetical ordering for SQLite.
 
-SQLite compares strings byte by byte, which puts "Černá" after "Zelený". This module
+SQLite compares strings byte by byte, which puts „Černá“ after „Zelený“. This module
 registers a `czech` collation on every SQLite connection so querysets can sort names
-the Czech way: č, ř, š, ž and "ch" are separate letters (ch comes after h), other
-accents (á, é, ě, í, ó, ú, ů, ý, ď, ť, ň) only break ties.
+the Czech way: „č, ř, š, ž“ and "ch" are separate letters (ch comes after h), other
+accents („á, é, ě, í, ó, ú, ů, ý, ď, ť, ň“) only break ties.
 """
 
 import unicodedata

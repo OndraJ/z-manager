@@ -32,9 +32,18 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 if not SECRET_KEY:
     if not DEBUG:
         raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is off.")
-    SECRET_KEY = "insecure-dev-only-key"
+    SECRET_KEY = "insecure-dev-only-key"  # noqa: S105 – dev fallback, rejected when DEBUG is off
 
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
+
+# The app is served only over plain HTTP on localhost (no TLS), so HTTPS-only settings
+# would break it. Revisit if the app ever runs on a server (docs/decisions.md #19).
+SILENCED_SYSTEM_CHECKS = [
+    "security.W004",  # SECURE_HSTS_SECONDS
+    "security.W008",  # SECURE_SSL_REDIRECT
+    "security.W012",  # SESSION_COOKIE_SECURE
+    "security.W016",  # CSRF_COOKIE_SECURE
+]
 
 
 # Application definition

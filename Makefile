@@ -18,7 +18,7 @@ PROD := docker compose
 .DEFAULT_GOAL := help
 .PHONY: help up down restart logs ps shell migrate makemigrations createsuperuser \
 	changepassword restore prod-up prod-down prod-restart prod-logs prod-migrate prod-restore \
-	install run test lint format check
+	install run test coverage lint format check check-language check-migrations check-deploy
 
 help: ## Show this help
 	@grep -E '^(## ---|[a-zA-Z_-]+:.*## )' $(MAKEFILE_LIST) | \
@@ -94,6 +94,10 @@ run: ## Run the dev server locally (needs .env with DJANGO_DEBUG=1)
 test: ## Run unit tests
 	uv run python manage.py test
 
+coverage: ## Run unit tests with coverage (fails under 90 %)
+	uv run coverage run manage.py test
+	uv run coverage report
+
 lint: ## Check code with ruff
 	uv run ruff check .
 	uv run ruff format --check .
@@ -102,4 +106,17 @@ format: ## Format code and fix lint issues
 	uv run ruff check --fix .
 	uv run ruff format .
 
-check: lint test ## Lint + tests (run before committing)
+check-language: ## Fail on Czech outside app texts (see AGENTS.md)
+	uv run python scripts/check_language.py
+
+check-migrations: ## Fail if a model change has no migration
+	uv run python manage.py makemigrations --check --dry-run
+
+check-deploy: ## Run Django's production security checks
+	DJANGO_DEBUG=0 DJANGO_SECRET_KEY=$(DEPLOY_CHECK_KEY) \
+		uv run python manage.py check --deploy --fail-level WARNING
+
+# Throw-away key, only so the deploy check can load production settings.
+DEPLOY_CHECK_KEY := deploy-check-only-6f1c2b9e4d7a0c3f8e5b1d9a7c4f2e0b8d6a3c1f
+
+check: lint check-language check-migrations check-deploy coverage ## Full quality gate (run before committing)

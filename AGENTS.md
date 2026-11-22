@@ -19,13 +19,13 @@ Internal Django web app for Zuza, who runs a hotel restaurant. It runs in Docker
 
 ## Language – strict rule
 
-Czech is allowed **only** in texts Zuza sees inside the app: templates, Django messages, form labels, model `verbose_name`, the backup e-mail. **Everything else is English** – Python identifiers and comments, JS/Apps Script, Makefile, configs, docs, PRD, commit messages, and names that scripts create outside the app (Drive folders, Gmail labels, file names). Docs may quote a UI label in „…“ (e.g. the „Zálohovat“ button).
+Czech is allowed **only** in texts Zuza sees inside the app: templates, Django messages, form labels, model `verbose_name`, the backup e-mail. **Everything else is English** – Python identifiers and comments, JS/Apps Script, Makefile, configs, docs, PRD, commit messages, and names that scripts create outside the app (Drive folders, Gmail labels, file names). Docs may quote a UI label in „…“ (e.g. the „Zálohovat“ button). Enforced by `make check-language` (`scripts/check_language.py`).
 
 ## Definition of done
 
 A task is done only when all of these hold:
 
-1. `make check` passes (lint, format, tests).
+1. `make check` passes: ruff (incl. security and simplification rules), format, language check, no missing migrations, Django deploy checks, tests with ≥ 90 % branch coverage. Never weaken a check to make it pass – fix the code, or ask.
 2. New behaviour has unit tests (every view, form, model method, service, management command).
 3. UI changes are verified in a browser (isolated `zm-test` stack, screenshots reviewed).
 4. `PRD.md`, `docs/decisions.md`, `README.md` and this file are updated where affected.
@@ -66,9 +66,9 @@ A task is done only when all of these hold:
 Run `make` to list all targets. Most used:
 
 ```bash
-make check     # lint + format check + tests – must pass before a commit
+make check     # full quality gate – must pass before a commit
 make format    # auto-fix lint issues and format
-make test      # tests only
+make test      # tests only (make coverage = tests + coverage report)
 make up/down   # developer's own dev instance in Docker – do not use for verification
 make migrate   # apply migrations in the running dev container (containers migrate only at start)
 ```

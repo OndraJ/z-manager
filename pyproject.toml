@@ -12,6 +12,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "coverage>=7.17.4",
     "ruff>=0.17.6",
 ]
 
@@ -21,4 +22,20 @@ target-version = "py314"
 extend-exclude = ["static/vendor"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "DJ"]
+# E/F: errors, I: imports, UP: modern syntax, B: likely bugs, DJ: Django,
+# SIM/C4/RET/PTH: simpler code, S: security
+select = ["E", "F", "I", "UP", "B", "DJ", "SIM", "C4", "RET", "PTH", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests use throw-away passwords.
+"*/tests/*" = ["S105", "S106"]
+
+[tool.coverage.run]
+branch = true
+source = ["."]
+omit = ["*/migrations/*", "*/tests/*", "manage.py", "config/wsgi.py", ".venv/*"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_covered = true

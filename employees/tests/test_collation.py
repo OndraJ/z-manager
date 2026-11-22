@@ -7,7 +7,8 @@ from employees.tests.factories import make_employee
 
 class CzechSortKeyTests(SimpleTestCase):
     def assertSorted(self, expected):
-        self.assertEqual(sorted(reversed(expected), key=czech_sort_key), expected)
+        scrambled = list(reversed(expected))
+        self.assertEqual(sorted(scrambled, key=czech_sort_key), expected)
 
     def test_hacek_letters_follow_their_base_letter(self):
         self.assertSorted(["Cibulka", "Čapek", "Dvořák"])

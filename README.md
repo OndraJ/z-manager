@@ -14,7 +14,7 @@ make up                     # dev app in Docker at http://localhost:8000
 make createsuperuser        # first time only
 make logs                   # follow logs
 make down                   # stop (data is kept)
-make check                  # lint + unit tests before committing
+make check                  # quality gate: lint, language, migrations, deploy checks, tests + coverage
 ```
 
 Without Docker: `make install` and `make run`.

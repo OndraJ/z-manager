@@ -22,7 +22,7 @@ Script source: [`drive-backup-apps-script.js`](drive-backup-apps-script.js).
 
 - Search: `from:me filename:sqlite3 has:attachment -label:zuzas-manager-backup-saved`.
 - Every attachment named `zuzas-manager-*.sqlite3` is saved to the folder (each backup has a unique date-time name, so nothing is overwritten). Processed e-mails get the Gmail label `zuzas-manager-backup-saved`.
-- Runs every hour; to test right away, click **Zálohovat** in the app and run `saveBackupsToDrive` manually in the script editor.
+- Runs every hour; to test right away, click „Zálohovat“ in the app and run `saveBackupsToDrive` manually in the script editor.
 
 ## Troubleshooting
 

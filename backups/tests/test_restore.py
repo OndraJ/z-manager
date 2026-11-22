@@ -82,8 +82,11 @@ class RestoreBackupCommandTests(TransactionTestCase):
         Employee.objects.all().delete()
 
         for answer in ("no", EOFError):
-            with self.subTest(answer=answer), mock.patch("builtins.input", side_effect=[answer]):
-                with self.assertRaisesMessage(CommandError, "Restore cancelled."):
-                    call_command("restore_backup", str(backup), stdout=StringIO())
+            with (
+                self.subTest(answer=answer),
+                mock.patch("builtins.input", side_effect=[answer]),
+                self.assertRaisesMessage(CommandError, "Restore cancelled."),
+            ):
+                call_command("restore_backup", str(backup), stdout=StringIO())
 
         self.assertFalse(Employee.objects.exists())
