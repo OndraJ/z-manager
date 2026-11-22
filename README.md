@@ -9,7 +9,7 @@ Stack: Python 3.14, Django, Bootstrap 5, SQLite, Docker Compose.
 Common commands are in the `Makefile` – run `make` to list them.
 
 ```bash
-cp .env.example .env        # then set DJANGO_DEBUG=1
+cp .env.example .env        # set DJANGO_DEBUG=1 for make run / make check (make up sets it itself)
 make up                     # dev app in Docker at http://localhost:8000
 make createsuperuser        # first time only
 make logs                   # follow logs
@@ -85,10 +85,6 @@ docker compose up -d --build
 
 Migrations run automatically when the container starts.
 
-## Manual check (milestone 1)
+## Acceptance checks
 
-1. After `docker compose up -d --build`, `http://localhost:8000` loads.
-2. Opening the dashboard while logged out redirects to the login page.
-3. Logging in shows the header (logo, hotel links, „Odhlásit“) and the sidebar. A wrong password keeps you on the login page with an error message.
-4. After logging out, the dashboard requires logging in again.
-5. After `docker compose up -d --build --force-recreate`, the original credentials still work.
+What to click through for each milestone is in [PRD.md](PRD.md) ("How we verify completion").

@@ -27,7 +27,7 @@ Why the project is the way it is. Newest decisions at the bottom. Format: **deci
 12. **Backup = e-mail with the SQLite file, sent from the app's own Gmail account `zuzasmanager@gmail.com`** (SMTP + app password in `.env`). – Gets the data off the laptop and keeps a history in the mailbox with no extra dependencies. Rejected: copying to a Windows folder (fragile bind mounts, stays on the same laptop), Google Drive API (Cloud project, OAuth tokens that expire or get revoked – Zuza could not fix it), download-only button (relies on Zuza moving the file).
 13. **Google Apps Script in the app's Gmail account copies backup attachments to Google Drive hourly** (`docs/drive-backup-apps-script.js`). – Drive copies without any credentials or code in the app; if it breaks, e-mail backups still work.
 14. **A confirmation modal shows the recipient before sending.** – Requested by the developer.
-15. **Restore is done by the developer (`make restore` / `restore_backup`), not in the app.** – One wrong click would overwrite all data. In-app drag & drop restore is an open question in the PRD.
+15. **Restore is done by the developer (`restore_backup` command, README → Restoring from a backup), not in the app.** – One wrong click would overwrite all data. In-app drag & drop restore is an open question in the PRD.
 
 ## Working rules (2026-11-21 – 2026-11-22)
 

@@ -34,18 +34,42 @@ Steps 2–4 are covered by unit tests. All steps are additionally verified by cl
 4. After logging out, the dashboard requires logging in again.
 5. After replacing the application container with the volume preserved, Zuza logs in with her original credentials.
 
+## Milestone 2 – staff records and backup ✅ done
+
+| Area | Agreement |
+| --- | --- |
+| Navigation | A new sidebar item „Správa zaměstnanců“ below „Pracovní plocha“. |
+| Employee data | First name, last name, date of birth, employment type (HPP – full-time employment contract, or „brigáda“ – casual/part-time work) and status („aktivní“ active, „nemocný“ sick, „ukončený“ terminated; default active). All fields are required; the date of birth cannot be in the future. |
+| Editing | Adding and editing happen on a separate page; after saving, Zuza returns to the list with a confirmation message. The status can also be changed directly in the list (saved immediately). Employees cannot be deleted; ending employment is recorded by changing the status. |
+| List | Shows name, date of birth, employment type, status and an edit button. Filters by status and by employment type combine. Without a filter: active, sick, terminated, then Czech alphabetical order by last and first name. The staff records are the source of employees for the shift schedule. |
+| Backup | A „Zálohovat“ button at the bottom of the sidebar asks for confirmation (showing the recipient) and e-mails a copy of the SQLite database from the app's own Gmail account `zuzasmanager@gmail.com`. Every backup is a separate e-mail, so the mailbox keeps the history; an Apps Script in that account also copies each backup to Google Drive (`docs/drive-backup.md`). |
+| Restore | Done by the developer with the `restore_backup` command (README → Restoring from a backup): it validates the file, asks for confirmation and keeps a safety copy of the current data. |
+
+### How we verify completion
+
+Covered by unit tests; additionally clicked through manually.
+
+1. Zuza adds an employee; a missing field or a future date of birth shows an error next to the field.
+2. She edits an employee and changes a status directly in the list; the list keeps its filters and confirms the change.
+3. Filters by status and employment type combine; names with „Č“, „Ch“ and „Š“ are in Czech alphabetical order.
+4. „Zálohovat“ shows the recipient, sends the e-mail with the database attached, and the file appears on Google Drive within an hour.
+5. Restoring that file with `restore_backup` brings the data back and leaves a safety copy of the previous state.
+
 ## Next milestones
 
 | Order | Area | Scope agreed so far |
 | --- | --- | --- |
-| 2 | Simple staff records | A new sidebar item „Správa zaměstnanců“ below „Pracovní plocha“. Zuza can add an employee and edit all of their data: first name, last name, date of birth, employment type (HPP – full-time employment contract, or „brigáda“ – casual/part-time work) and status („aktivní“ active, „nemocný“ sick, „ukončený“ terminated; default active). All fields are required; the date of birth cannot be in the future. Adding and editing happen on a separate page; after saving, Zuza returns to the list with a confirmation message. Employees cannot be deleted; ending employment is recorded by changing the status. The status can also be changed directly in the list (saved immediately). The list shows name, date of birth, employment type, status and an edit button, and can be filtered by status and by employment type (filters combine). Without a filter it shows all employees ordered: active, sick, terminated, then alphabetically by last and first name (Czech alphabetical order). The milestone also includes a „Zálohovat“ (back up) button at the bottom of the sidebar that e-mails a copy of the SQLite database to a configured address (the app sends from its own Gmail account, `zuzasmanager@gmail.com`). Every backup is a separate e-mail, so the mailbox keeps the history. Restoring from a backup is done by the developer with a command (`make restore`); it validates the file, asks for confirmation and keeps a safety copy of the current data. The staff records will be the source of employees when building the shift schedule. |
-| 3 | Shift schedule | Zuza builds the schedule in advance for a week, several weeks or a month and assigns employees from the staff records to shifts. All employees are available for selection, in the same order as in the staff records. The detailed design will be done after the app foundation is finished. |
+| 3 | Shift schedule | Zuza builds the schedule in advance for a week, several weeks or a month and assigns employees from the staff records to shifts. All employees are available for selection, in the same order as in the staff records. The detailed design will be done when the milestone starts. |
 
 Any further areas will be decided based on experience with using the app.
 
 ## Open questions for further design
 
-**When implementing staff records**
+**Shift schedule**
 
-- Working hours (contracted hours for HPP, a limit for „brigáda“) and any checking of statutory limits for casual work are to be resolved when the feature is implemented.
-- Whether Zuza should be able to restore a backup herself in the app (e.g. drag & drop), and whether to add a reminder when the last backup is old.
+- Working hours (contracted hours for HPP, a limit for „brigáda“) and any checking of statutory limits for casual work – deferred from staff records (`docs/decisions.md` #9).
+
+**Backup – ideas, only if Zuza needs them**
+
+- Restoring a backup by Zuza herself in the app (e.g. drag & drop).
+- A reminder when the last backup is old.

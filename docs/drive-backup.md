@@ -26,6 +26,6 @@ Script source: [`drive-backup-apps-script.js`](drive-backup-apps-script.js).
 
 ## Troubleshooting
 
-- **Nothing is saved:** in Gmail of `zuzasmanager@gmail.com` check that the backup e-mail is in *Sent*. If not, add `zuzasmanager@gmail.com` to `BACKUP_EMAIL_TO` in `.env`.
+- **Nothing is saved:** the script only sees backups *sent from* `zuzasmanager@gmail.com`. Check that `EMAIL_HOST_USER` in `.env` on Zuza's laptop is `zuzasmanager@gmail.com` and that the backup e-mail is in that account's *Sent* folder.
 - **Errors:** script editor → *Executions* shows the log of every run. Google also e-mails the account when a triggered run fails.
 - **Restore:** download the file from the Drive folder and follow README → Restoring from a backup.
