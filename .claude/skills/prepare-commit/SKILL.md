@@ -13,4 +13,4 @@ Commit rules are in `AGENTS.md` → Git; the project hook enforces them. Steps:
 4. Summary for the developer (Czech, short): what changed, how it was verified, what was **not** verified, decisions taken on the way.
 5. Proposed message: short English imperative summary (e.g. "Add shift schedule week view"), optional body with the why.
 6. **Wait for explicit approval.**
-7. Stage with `git add <files>` as its own command, then run `git commit -m "…"` alone. The hook checks the commit before it runs: it rejects staging in the same command and any change in the working tree that is not staged (`make check` must test exactly what is committed). Unrelated work in progress has to be moved away first – ask the developer how.
+7. Stage with `git add <files>` as its own command, then run `git commit -m "…"` alone (why: `AGENTS.md` → Skills and hooks). Unrelated work in progress has to be moved away first – ask the developer how.

@@ -5,7 +5,7 @@ description: Project-specific review of the current diff in Zuza's Manager befor
 
 # Quality review
 
-1. `make check` – fix every failure in the code; never weaken a check, threshold or rule.
+1. `make check` – fix failures in the code (`AGENTS.md` → Definition of done).
 2. Check the diff against `AGENTS.md` (Language, Architecture, Conventions, Testing) and the `django-patterns` skill.
 3. Go through the review-only checklist below.
 4. **Larger changes only** – run the built-in `code-review` skill, then `simplify`, and fix confirmed findings. Larger means any of: roughly 150+ changed lines of code, a new app/model/service/management command, or touching login, permissions, backups/restore or data deletion. For smaller changes skip them and say so.

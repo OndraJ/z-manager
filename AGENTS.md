@@ -1,6 +1,6 @@
 # Zuza's Manager – agent guide
 
-Internal Django web app for Zuza, who runs a hotel restaurant. It runs in Docker on her Windows laptop at `http://localhost:8000`. One developer (Ondra) builds it with AI agents across many sessions – these rules exist so the developer never has to repeat them.
+Internal Django web app for Zuza, who runs a hotel restaurant. It runs in Docker on her Windows laptop at `http://localhost:8000`. It serves only her and will most likely never go to production – prefer the simplest solution that works for one user, and treat production-grade complexity as a cost, not a virtue. One developer (Ondra) builds it with AI agents across many sessions – these rules exist so the developer never has to repeat them.
 
 ## Sources of truth
 
@@ -52,7 +52,9 @@ A task is done only when all of these hold:
 - State-changing actions are POST only (`http_method_names = ["post"]` where a view only changes state).
 - Sidebar items appear only when the feature is finished.
 - Add a dependency only when it clearly saves work; record why in `docs/decisions.md`.
-- Keep it simple – one user, one laptop, an experiment.
+- **New apps** get a URL prefix and an `app_name` namespace (like `employees`: `/employees/`, `employees:list`). The existing global names `login`, `dashboard` and `backup` stay as they are.
+- Values every page needs come from context processors; if a third one is needed, merge them into `config/context_processors.py`.
+- Type hints on services, helpers and scripts; views, forms and template-facing code go without.
 
 ## Testing
 
@@ -85,7 +87,8 @@ Skills in `.claude/skills/` hold the procedures – use them instead of improvis
 - `ui-check` – browser verification on the isolated stack
 - `quality-review` – review checklist; for larger changes also the built-in `code-review` and `simplify`
 - `prepare-commit` – one-feature check, summary, message, wait for approval
-- `grilling` / `grill-me` – structured question rounds
+- `codebase-audit` – deep review of the whole codebase with independent reviewers (when the developer asks for an audit)
+- `grilling` / `grill-me` – question rounds; the developer runs `/grill-me` for a full design interview
 
 Hooks in `.claude/settings.json` (logic in `scripts/claude_hooks.py`, needs `uv` on `PATH`) enforce rules automatically:
 
