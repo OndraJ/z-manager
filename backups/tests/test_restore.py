@@ -1,3 +1,4 @@
+import shutil
 import sqlite3
 import tempfile
 from io import StringIO
@@ -17,6 +18,7 @@ class RestoreBackupCommandTests(TransactionTestCase):
 
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp)
 
     def restore(self, path, **options):
         out = StringIO()
@@ -90,3 +92,26 @@ class RestoreBackupCommandTests(TransactionTestCase):
                 call_command("restore_backup", str(backup), stdout=StringIO())
 
         self.assertFalse(Employee.objects.exists())
+
+    def test_restore_runs_after_typing_yes(self):
+        make_employee(last_name="Ze zálohy")
+        backup = self.tmp / "backup.sqlite3"
+        write_database_copy(backup)
+        Employee.objects.all().delete()
+
+        with mock.patch("builtins.input", return_value="yes"):
+            call_command(
+                "restore_backup", str(backup), safety_dir=self.tmp / "safety", stdout=StringIO()
+            )
+
+        self.assertEqual([e.last_name for e in Employee.objects.all()], ["Ze zálohy"])
+
+    def test_rejects_damaged_database(self):
+        backup = self.tmp / "backup.sqlite3"
+        write_database_copy(backup)
+        damaged = backup.read_bytes()
+        middle = len(damaged) // 2
+        backup.write_bytes(damaged[:middle] + b"\x00" * 4096 + damaged[middle + 4096 :])
+
+        with self.assertRaises(CommandError):
+            self.restore(backup)

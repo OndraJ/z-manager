@@ -1,3 +1,4 @@
+import shutil
 import tempfile
 from contextlib import redirect_stdout
 from io import StringIO
@@ -66,6 +67,7 @@ class FileSelectionTests(TestCase):
 class MainTests(TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp)
 
     def run_main(self, files):
         paths = []

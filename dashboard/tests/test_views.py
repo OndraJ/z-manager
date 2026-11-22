@@ -22,7 +22,10 @@ class DashboardViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "dashboard/index.html")
         self.assertContains(response, 'class="zm-sidebar"')
-        self.assertContains(response, 'aria-current="page"')
+        self.assertRegex(
+            response.content.decode(),
+            rf'href="{reverse("dashboard")}"\s+class="nav-link active" aria-current="page"',
+        )
         self.assertContains(response, "Pracovní plocha")
 
     def test_header_shows_hotel_links_and_logout(self):

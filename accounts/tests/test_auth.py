@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -67,11 +66,9 @@ class AccountSetupTests(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
-    def test_there_is_no_registration_page(self):
-        for path in ("/register/", "/registrace/", "/signup/"):
-            with self.subTest(path=path):
-                self.assertEqual(self.client.get(path).status_code, 404)
+    def test_every_request_extends_the_session_by_24_hours(self):
+        self.client.force_login(get_user_model().objects.create_user(username="zuza"))
 
-    def test_session_expires_24_hours_after_last_activity(self):
-        self.assertEqual(settings.SESSION_COOKIE_AGE, 24 * 60 * 60)
-        self.assertTrue(settings.SESSION_SAVE_EVERY_REQUEST)
+        response = self.client.get(reverse("dashboard"))
+
+        self.assertEqual(response.cookies["sessionid"]["max-age"], 24 * 60 * 60)

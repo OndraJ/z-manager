@@ -99,7 +99,7 @@ class EmployeeListTests(EmployeeViewTestCase):
         response = self.client.get(LIST_URL)
 
         self.assertContains(response, "Správa zaměstnanců")
-        self.assertContains(response, f'href="{LIST_URL}"\n         class="nav-link active"')
+        self.assertRegex(response.content.decode(), rf'href="{LIST_URL}"\s+class="nav-link active"')
 
 
 class EmployeeCreateUpdateTests(EmployeeViewTestCase):
@@ -139,13 +139,17 @@ class EmployeeCreateUpdateTests(EmployeeViewTestCase):
         self.assertContains(response, "is-invalid")
         self.assertFalse(Employee.objects.exists())
 
+    def test_edit_page_is_prefilled(self):
+        employee = make_employee()
+
+        response = self.client.get(reverse("employees:update", args=[employee.pk]))
+
+        self.assertContains(response, "Upravit zaměstnance")
+        self.assertContains(response, 'value="1990-05-17"')
+
     def test_update_employee(self):
         employee = make_employee()
         url = reverse("employees:update", args=[employee.pk])
-
-        response = self.client.get(url)
-        self.assertContains(response, "Upravit zaměstnance")
-        self.assertContains(response, 'value="1990-05-17"')
 
         response = self.client.post(
             url, valid_form_data(first_name="Jana", last_name="Malá", status="sick")
