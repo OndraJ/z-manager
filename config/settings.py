@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Variables already set in the environment win over .env (python-dotenv never overrides);
+# compose.verify.yaml relies on that to switch real e-mail off.
 load_dotenv(BASE_DIR / ".env")
 
 
@@ -160,22 +162,22 @@ LOGGING = {
 }
 
 
-# E-mail – used for backups. Without EMAIL_HOST, e-mails are only printed to the log.
+# E-mail – used only for backups, always sent through the app's own Gmail account
+# (docs/decisions.md #12). Without the app password, e-mails are only printed to the log.
 
-EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
-EMAIL_BACKEND = (
-    "django.core.mail.backends.smtp.EmailBackend"
-    if EMAIL_HOST
-    else "django.core.mail.backends.console.EmailBackend"
-)
-EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
-EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS")
-EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL")
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "zuzasmanager@gmail.com"
 # Google shows app passwords with spaces ("abcd efgh ..."); accept them as pasted.
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "").replace(" ", "")
+EMAIL_BACKEND = (
+    "django.core.mail.backends.smtp.EmailBackend"
+    if EMAIL_HOST_PASSWORD
+    else "django.core.mail.backends.console.EmailBackend"
+)
 EMAIL_TIMEOUT = 30
-DEFAULT_FROM_EMAIL = f"Zuza’s Manager <{EMAIL_HOST_USER or 'zuzas-manager@localhost'}>"
+DEFAULT_FROM_EMAIL = f"Zuza’s Manager <{EMAIL_HOST_USER}>"
 
 # Recipients of the backup e-mail (comma-separated).
 BACKUP_EMAIL_TO = env_list("BACKUP_EMAIL_TO", "")

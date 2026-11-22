@@ -51,3 +51,4 @@ Why the project is the way it is. Newest decisions at the bottom. Format: **deci
 ## Audit fixes (2026-11-22)
 
 24. **All logs go to the console (`docker compose logs`), Django errors at level ERROR; gunicorn logs requests.** – Django's default logging drops server errors when `DEBUG` is off (it only mails `ADMINS`), so a crash on Zuza's laptop left no traceback. 4xx warnings are left out as noise.
+25. **The Gmail SMTP settings are fixed in code; `.env` holds only the app password and the recipients.** – There is exactly one sending account (#12). Fewer variables mean fewer ways to misconfigure Zuza's laptop; an empty password switches to printing e-mails, which is also how test stacks disable sending.

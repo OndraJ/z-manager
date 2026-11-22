@@ -1,9 +1,8 @@
 # Isolated stack for automated verification (make verify-up / verify-shots / verify-down).
 # Runs as project "zm-test" on port 8001 next to the developer's own instance and never
-# sends real e-mail, even though it reads the same .env with real SMTP credentials.
+# sends real e-mail: the empty app password wins over the one in the shared .env.
 services:
   web:
     environment:
-      EMAIL_HOST: ""
       EMAIL_HOST_PASSWORD: ""
       BACKUP_EMAIL_TO: verify@example.com

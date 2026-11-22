@@ -51,9 +51,9 @@ docker compose exec web python manage.py changepassword <username>
 
 ### Backups
 
-The „Zálohovat“ button at the bottom of the sidebar e-mails a copy of the database (`zuzas-manager-<date>.sqlite3`) to `BACKUP_EMAIL_TO`. The app sends from its own Gmail account `zuzasmanager@gmail.com` – fill in the `EMAIL_*` values in `.env` (see `.env.example`) and restart: `docker compose up -d`.
+The „Zálohovat“ button at the bottom of the sidebar e-mails a copy of the database (`zuzas-manager-<date>.sqlite3`) to `BACKUP_EMAIL_TO`. The app always sends from its own Gmail account `zuzasmanager@gmail.com` – put its app password into `EMAIL_HOST_PASSWORD` in `.env` (see `.env.example`) and restart: `docker compose up -d`.
 
-Without `EMAIL_HOST` (e.g. in development) the e-mail is only printed to the container log.
+Without `EMAIL_HOST_PASSWORD` (e.g. in development) the e-mail is only printed to the container log.
 
 Backups are also copied to Google Drive by an Apps Script in the app's Gmail account – see [docs/drive-backup.md](docs/drive-backup.md).
 
