@@ -27,7 +27,7 @@ A task is done only when all of these hold:
 
 1. `make check` passes: ruff (incl. security and simplification rules), format, language check, no missing migrations, Django deploy checks, tests with ≥ 90 % branch coverage. Never weaken a check to make it pass – fix the code, or ask.
 2. New behaviour has unit tests (every view, form, model method, service, management command).
-3. UI changes are verified in a browser (isolated `zm-test` stack, screenshots reviewed).
+3. UI changes are verified in a browser (`ui-check` skill: isolated `zm-test` stack, screenshots reviewed).
 4. `PRD.md`, `docs/decisions.md`, `README.md` and this file are updated where affected.
 5. The diff is summarized to the developer and the commit is proposed – **not** made – until the developer approves.
 
@@ -76,7 +76,16 @@ make verify-up / verify-manage / verify-shots / verify-down   # isolated stack f
 
 New recurring commands get a Makefile target with a `## description` comment.
 
-## Hooks (Claude Code)
+## Skills and hooks (Claude Code)
+
+Skills in `.claude/skills/` hold the procedures – use them instead of improvising:
+
+- `feature` – workflow from PRD to proposed commit (start here for any new functionality)
+- `django-patterns` – how models, services, views, forms, templates and tests are written here
+- `ui-check` – browser verification on the isolated stack
+- `quality-review` – review checklist; for larger changes also the built-in `code-review` and `simplify`
+- `prepare-commit` – one-feature check, summary, message, wait for approval
+- `grilling` / `grill-me` – structured question rounds
 
 Hooks in `.claude/settings.json` (logic in `scripts/claude_hooks.py`, needs `uv` on `PATH`) enforce rules automatically:
 
