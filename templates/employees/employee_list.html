@@ -46,7 +46,7 @@
       <tbody>
         {% for employee in employees %}
           <tr>
-            <td class="fw-semibold">{{ employee.last_name }} {{ employee.first_name }}</td>
+            <td class="fw-semibold">{{ employee }}</td>
             <td>{{ employee.birth_date|date:"j. n. Y" }}</td>
             <td>{{ employee.get_employment_type_display }}</td>
             <td>

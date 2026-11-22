@@ -75,7 +75,8 @@ h1, h2, h3, h4, h5, h6,
   --bs-btn-disabled-border-color: var(--zm-cherry);
 }
 
-.form-control:focus {
+.form-control:focus,
+.form-select:focus {
   border-color: rgba(var(--zm-cherry-rgb), 0.5);
   box-shadow: 0 0 0 0.25rem rgba(var(--zm-cherry-rgb), 0.2);
 }
@@ -137,9 +138,14 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* Sidebar + main area */
+.zm-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 .zm-shell {
   display: flex;
-  min-height: calc(100vh - 4.25rem);
+  flex: 1;
 }
 .zm-sidebar {
   flex: 0 0 15rem;
@@ -160,6 +166,9 @@ h1, h2, h3, h4, h5, h6,
 .zm-sidebar .nav-link:not(.active):focus-visible {
   background: rgba(var(--zm-cherry-rgb), 0.1);
   color: var(--zm-cherry-dark);
+}
+.zm-sidebar .nav-link:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(var(--zm-cherry-rgb), 0.25);
 }
 .zm-sidebar .nav-link.active {
   color: #fff;

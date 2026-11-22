@@ -43,7 +43,7 @@ class Command(BaseCommand):
 
         safety_dir = safety_dir or Path(settings.DATABASES["default"]["NAME"]).parent
         safety_dir.mkdir(parents=True, exist_ok=True)
-        safety_copy = safety_dir / f"before-restore-{timezone.now():%Y%m%d-%H%M%S}.sqlite3"
+        safety_copy = safety_dir / f"before-restore-{timezone.localtime():%Y-%m-%d-%H%M%S}.sqlite3"
         write_database_copy(safety_copy)
         self.stdout.write(f"Safety copy of the current data: {safety_copy}")
 

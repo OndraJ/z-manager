@@ -21,9 +21,14 @@ class EmployeeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Django's "- Select an option -" blank label has no Czech translation yet.
         self.fields["employment_type"].choices = [("", "– vyberte –"), *EmploymentType.choices]
-        for name, field in self.fields.items():
-            if self.errors.get(name):
-                field.widget.attrs["class"] += " is-invalid"
+
+    def full_clean(self):
+        super().full_clean()
+        # Bootstrap shows the red border and the error text only with `is-invalid`.
+        for name in self.errors:
+            if name in self.fields:
+                attrs = self.fields[name].widget.attrs
+                attrs["class"] = f"{attrs.get('class', '')} is-invalid".strip()
 
 
 class EmployeeStatusForm(forms.ModelForm):

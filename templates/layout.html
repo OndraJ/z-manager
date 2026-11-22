@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
+<div class="zm-page">
 {% include "partials/_header.html" %}
 <div class="zm-shell">
   {% include "partials/_sidebar.html" %}
@@ -12,6 +13,7 @@
     {% endfor %}
     {% block content %}{% endblock %}
   </main>
+</div>
 </div>
 {% include "partials/_backup_modal.html" %}
 {% endblock %}

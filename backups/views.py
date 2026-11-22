@@ -1,5 +1,4 @@
 import logging
-import smtplib
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -23,7 +22,7 @@ class BackupView(LoginRequiredMixin, View):
             messages.error(
                 request, "Zálohování není nastavené – chybí e-mailová adresa pro zálohy."
             )
-        except smtplib.SMTPException, OSError:
+        except OSError:  # includes smtplib.SMTPException and network errors
             logger.exception("Sending the backup e-mail failed")
             messages.error(
                 request,
