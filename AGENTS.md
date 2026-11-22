@@ -91,7 +91,7 @@ Hooks in `.claude/settings.json` (logic in `scripts/claude_hooks.py`, needs `uv`
 
 - After editing a `.py` file: `ruff format` and safe auto-fixes. Unused imports/variables are only reported, never removed – an import added for the next edit survives.
 - `git commit`: must run alone (stage in a separate command), the working tree must contain only what is committed, `make check` must pass, no AI attribution.
-- Blocked: push, creating/switching/deleting branches, history rewrites, `docker compose down -v` outside `zm-test`, removing Docker volumes. Mentioning these commands in text (grep, messages) is fine.
+- Blocked: push, creating/switching/deleting branches (any `git checkout` except `git checkout -- <paths>`), history rewrites, `docker compose down -v` outside `zm-test`, removing Docker volumes. Mentioning these commands in text (grep, messages) is fine.
 
 If a hook blocks something the developer explicitly asked for, tell the developer – do not work around it.
 

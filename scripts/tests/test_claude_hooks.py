@@ -48,6 +48,7 @@ class CheckBashCommandTests(TestCase):
             "git diff --stat",
             'git commit -m "Add employee filters"',
             "git checkout -- employees/views.py",
+            "git restore employees/views.py",
             "git branch",
             "git branch -a --show-current",
             "git log --grep=Co-Authored-By",
@@ -77,6 +78,8 @@ class CheckBashCommandTests(TestCase):
     def test_blocks_branch_changes(self):
         for command in (
             "git switch main",
+            "git checkout main",
+            "git checkout HEAD~2",
             "git checkout -b feature",
             "git branch feature/x",
             "git branch -D old",

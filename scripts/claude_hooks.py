@@ -70,8 +70,12 @@ def git_subcommand(args: list[str]) -> tuple[str, list[str]]:
 def check_git(sub: str, args: list[str]) -> str | None:
     if sub == "push":
         return "Pushing is done by the developer, not by the agent."
-    if sub == "switch" or (sub == "checkout" and {"-b", "-B"} & set(args)):
-        return "Creating or switching branches is done by the developer."
+    # `git checkout -- <paths>` only restores files; any other checkout can switch branches.
+    if sub == "switch" or (sub == "checkout" and "--" not in args):
+        return (
+            "Creating or switching branches is done by the developer. "
+            "To restore files use `git checkout -- <paths>` or `git restore <paths>`."
+        )
     if sub == "branch" and any(not a.startswith("-") for a in args):
         return "Creating, renaming or deleting branches is done by the developer."
     if (
