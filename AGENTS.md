@@ -1,6 +1,6 @@
 # Zuza's Manager – agent guide
 
-Internal Django web app for Zuza, who runs a hotel restaurant. It runs in Docker on her Windows laptop at `http://localhost:8000`. One developer (Ondra) builds it with AI agents across many sessions – these rules exist so he never has to repeat himself.
+Internal Django web app for Zuza, who runs a hotel restaurant. It runs in Docker on her Windows laptop at `http://localhost:8000`. One developer (Ondra) builds it with AI agents across many sessions – these rules exist so the developer never has to repeat them.
 
 ## Sources of truth
 
@@ -11,7 +11,7 @@ Internal Django web app for Zuza, who runs a hotel restaurant. It runs in Docker
 
 ## Working with the developer
 
-- Chat in Czech (he writes Czech). Everything in the repository follows the language rule below.
+- Chat in Czech (the developer writes Czech). Everything in the repository follows the language rule below.
 - Clarify before building: ask in short numbered rounds, each question with a recommended answer. Ask only open questions – no recaps of what is already answered.
 - Non-trivial work: questions → short plan → implementation. Small fixes: just do them.
 - **One feature per commit.** If a task contains several features, deliver them one by one.
@@ -29,7 +29,7 @@ A task is done only when all of these hold:
 2. New behaviour has unit tests (every view, form, model method, service, management command).
 3. UI changes are verified in a browser (isolated `zm-test` stack, screenshots reviewed).
 4. `PRD.md`, `docs/decisions.md`, `README.md` and this file are updated where affected.
-5. The diff is summarized to the developer and the commit is proposed – **not** made – until he approves.
+5. The diff is summarized to the developer and the commit is proposed – **not** made – until the developer approves.
 
 ## Architecture
 
@@ -75,9 +75,19 @@ make migrate   # apply migrations in the running dev container (containers migra
 
 New recurring commands get a Makefile target with a `## description` comment.
 
+## Hooks (Claude Code)
+
+Hooks in `.claude/settings.json` (logic in `scripts/claude_hooks.py`, needs `uv` on `PATH`) enforce rules automatically:
+
+- After editing a `.py` file: `ruff format` and safe auto-fixes. Unused imports/variables are only reported, never removed – an import added for the next edit survives.
+- `git commit`: must run alone (stage in a separate command), the working tree must contain only what is committed, `make check` must pass, no AI attribution.
+- Blocked: push, creating/switching/deleting branches, history rewrites, `docker compose down -v` outside `zm-test`, removing Docker volumes. Mentioning these commands in text (grep, messages) is fine.
+
+If a hook blocks something the developer explicitly asked for, tell the developer – do not work around it.
+
 ## Safety
 
-- **The Docker daemon is shared with the developer's own setup** (project `z_manager`, port 8000, his data volume). For verification always use an isolated project and port: `ZM_PORT=8001 docker compose -p zm-test ...`. Never `down -v` anything but `zm-test`.
+- **The Docker daemon is shared with the developer's own setup** (project `z_manager`, port 8000, the developer's data volume). For verification always use an isolated project and port: `ZM_PORT=8001 docker compose -p zm-test ...`. Never `down -v` anything but `zm-test`.
 - **The developer's `.env` contains real Gmail SMTP credentials.** Test stacks read the same `.env`, so always override `EMAIL_HOST: ""` and `EMAIL_HOST_PASSWORD: ""` in the test compose override.
 - Never print, log or commit secrets (`.env` values). `.env.example` documents every variable.
 - The dev Compose file is `compose.dev.yaml`, deliberately not `compose.override.yaml`, so Docker never auto-loads dev settings on Zuza's laptop.

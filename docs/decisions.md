@@ -33,9 +33,15 @@ Why the project is the way it is. Newest decisions at the bottom. Format: **deci
 
 16. **English everywhere except texts Zuza sees in the app.** – Repeated three times by the developer; enforced in `AGENTS.md`.
 17. **One feature per commit, no AI attribution in commit messages, the developer pushes.**
-18. **Verification uses an isolated `zm-test` Docker project with SMTP disabled.** – The Docker daemon and `.env` are shared with the developer's own instance; an early test run deleted his data volume.
+18. **Verification uses an isolated `zm-test` Docker project with SMTP disabled.** – The Docker daemon and `.env` are shared with the developer's own instance; an early test run deleted the developer's data volume.
 
 ## Quality gate (2026-11-22)
 
 19. **HTTPS-only security checks are silenced** (`security.W004/W008/W012/W016`). – The app is served over plain HTTP on `localhost` only; secure cookies or SSL redirects would break login. Revisit if the app moves to a server.
 20. **`make check` is the quality gate**: ruff (incl. simplification and security rules), format check, language check (`scripts/check_language.py`), missing-migration check, Django deploy checks and tests with ≥ 90 % branch coverage (`coverage` dev dependency). – Rules that a script can verify are enforced by the script, not by instructions.
+21. **Rules a machine can check are enforced by Claude Code hooks** (`.claude/settings.json` → `scripts/claude_hooks.py`). – The developer does not want to repeat rules or check that they were followed. Details:
+    - Commands are parsed like a shell (quotes, `;`, `&&`, `|`), so only real `git`/`docker` commands are blocked, not text that mentions them.
+    - `git commit` must run alone with nothing unstaged, so `make check` on the working tree tests exactly what is committed.
+    - The formatter never auto-removes unused imports or variables (an agent adds an import before the code that uses it).
+    - Without `uv` on `PATH` the hooks block loudly instead of switching off silently.
+    - Hook logic is a tested Python module rather than inline shell, so `make check` covers it.

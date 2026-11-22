@@ -1,6 +1,6 @@
 # Zuza’s Manager
 
-Internal web app for managing a hotel restaurant – staff, shift planning and more. Product requirements are in [PRD.md](PRD.md), conventions for coding agents in [CLAUDE.md](CLAUDE.md).
+Internal web app for managing a hotel restaurant – staff, shift planning and more. Product requirements are in [PRD.md](PRD.md), rules for coding agents in [AGENTS.md](AGENTS.md), decisions in [docs/decisions.md](docs/decisions.md).
 
 Stack: Python 3.14, Django, Bootstrap 5, SQLite, Docker Compose.
 
@@ -18,6 +18,10 @@ make check                  # quality gate: lint, language, migrations, deploy c
 ```
 
 Without Docker: `make install` and `make run`.
+
+### Claude Code hooks
+
+`.claude/settings.json` registers project hooks (logic in `scripts/claude_hooks.py`) that format edited Python files and block forbidden commands – see [AGENTS.md](AGENTS.md). They run through `uv`, so **`uv` must be on the `PATH` of the process that starts Claude Code**. This matters when Claude runs from an IDE launched from the Dock/Start menu, which may not see your shell's `PATH`. If `uv` is missing, the hooks block every Bash command with a message saying so – they never switch off silently. Check with `command -v uv` in the same environment.
 
 ## Installation on Zuza’s laptop (Windows)
 

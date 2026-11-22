@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && if command -v uv >/dev/null 2>&1; then uv run --quiet python scripts/claude_hooks.py guard-bash; else echo 'Project hooks need uv on PATH and cannot run, so Bash is blocked. Install uv or add it to PATH (README: Claude Code hooks).' >&2; exit 2; fi",
+            "timeout": 300
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && if command -v uv >/dev/null 2>&1; then uv run --quiet python scripts/claude_hooks.py format-python; else echo 'Project hooks need uv on PATH – the edited file was not formatted (README: Claude Code hooks).' >&2; exit 2; fi",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
