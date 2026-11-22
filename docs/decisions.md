@@ -47,3 +47,7 @@ Why the project is the way it is. Newest decisions at the bottom. Format: **deci
     - Hook logic is a tested Python module rather than inline shell, so `make check` covers it.
 22. **Browser verification has dedicated make targets** (`verify-up`, `verify-manage`, `verify-shots`, `verify-down`, `compose.verify.yaml`). – Running the isolated stack with SMTP disabled must not depend on an agent remembering the right flags. Playwright runs ad hoc via `uv run --with playwright`, so it is not a project dependency.
 23. **`AGENTS.md` holds the rules, project skills (`.claude/skills/`) hold the procedures and point to `AGENTS.md` instead of repeating it.** – One place per rule keeps them from drifting apart. `AGENTS.md` (not `CLAUDE.md`) is the main file so other AI tools read the same rules; `CLAUDE.md` only imports it. The skill is called `prepare-commit`, not `commit`, to avoid clashing with built-in commands. Built-in `code-review` and `simplify` run only for larger changes – they are slow and costly for small ones.
+
+## Audit fixes (2026-11-22)
+
+24. **All logs go to the console (`docker compose logs`), Django errors at level ERROR; gunicorn logs requests.** – Django's default logging drops server errors when `DEBUG` is off (it only mails `ADMINS`), so a crash on Zuza's laptop left no traceback. 4xx warnings are left out as noise.

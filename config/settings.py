@@ -144,6 +144,22 @@ STORAGES = {
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
+# Logging – everything to the console, i.e. `docker compose logs`. Django's default
+# drops errors when DEBUG is off (it only mails ADMINS, which this app has none of),
+# so a crash on Zuza's laptop would leave no traceback anywhere.
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {"handlers": ["console"], "level": "WARNING"},
+    "loggers": {
+        # ERROR, not WARNING: 4xx responses are logged as warnings and are just noise here.
+        "django": {"handlers": ["console"], "level": "ERROR", "propagate": False},
+    },
+}
+
+
 # E-mail – used for backups. Without EMAIL_HOST, e-mails are only printed to the log.
 
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
